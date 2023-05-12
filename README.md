@@ -1,4 +1,4 @@
-This is fork of https://github.com/havunen/vue-treeselect
+This is fork of https://github.com/riophae/vue-treeselect
 
 - Only modern browser targets supported
 - Added ESM package entry
