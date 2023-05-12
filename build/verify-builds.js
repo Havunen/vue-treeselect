@@ -8,16 +8,21 @@ const expectedDistFiles = [
   'vue-treeselect.cjs.js.map',
   'vue-treeselect.umd.js',
   'vue-treeselect.umd.js.map',
+  'vue-treeselect.esm.js',
+  'vue-treeselect.esm.js.map',
   'vue-treeselect.css',
   'vue-treeselect.css.map',
   'vue-treeselect.cjs.min.js',
   'vue-treeselect.cjs.min.js.map',
   'vue-treeselect.umd.min.js',
   'vue-treeselect.umd.min.js.map',
-  // Currently there is no SourceMap for the minified CSS file.
+  'vue-treeselect.esm.min.js',
+  'vue-treeselect.esm.min.js.map',
   'vue-treeselect.min.css',
+  'vue-treeselect.min.css.map',
 ]
-const actualFiles = fs.readdirSync(config.library.assetsRoot)
+const actualFiles = fs.readdirSync(config.library.assetsRoot).filter(x => !x.endsWith('.png'))
+
 if (!shallowEqualArrays(expectedDistFiles.sort(), actualFiles.sort())) {
   throw new Error('Built files are not as expected.')
 }
@@ -34,6 +39,8 @@ function shouldReplaceEnvOrNot(fileName, expected) {
     throw new Error(`${fileName} was not built correctly.`)
   }
 }
+shouldReplaceEnvOrNot('vue-treeselect.esm.js', true)
+shouldReplaceEnvOrNot('vue-treeselect.esm.min.js', true)
 shouldReplaceEnvOrNot('vue-treeselect.umd.js', true)
 shouldReplaceEnvOrNot('vue-treeselect.umd.min.js', true)
 shouldReplaceEnvOrNot('vue-treeselect.cjs.js', false)
