@@ -1305,14 +1305,14 @@ export default {
       }
 
       // Vue doesn't support directly watching on objects.
-      this.$watch(
-        () => entry.options,
-        () => {
-          // TODO: potential redundant re-initialization.
-          if (this.trigger.searchQuery === searchQuery) this.initialize()
-        },
-        { deep: true },
-      )
+      // this.$watch(
+      //   () => entry.options,
+      //   () => {
+      //     // TODO: potential redundant re-initialization.
+      //     if (this.trigger.searchQuery === searchQuery) this.initialize()
+      //   },
+      //   { deep: true },
+      // )
 
       if (searchQuery === '') {
         if (Array.isArray(this.defaultOptions)) {
@@ -1514,119 +1514,121 @@ export default {
       }
     },
 
+    mapToNode([ node, raw ], index, parentNode, prevNodeMap) {
+      this.checkDuplication(node)
+      this.verifyNodeShape(node)
+
+      const { id, label, children, isDefaultExpanded } = node
+      const isRootNode = parentNode === NO_PARENT_NODE
+      const level = isRootNode ? 0 : parentNode.level + 1
+      const isBranch = Array.isArray(children) || children === null
+      const isLeaf = !isBranch
+      const isDisabled = !!node.isDisabled || (!this.flat && !isRootNode && parentNode.isDisabled)
+      const isNew = !!node.isNew
+      const lowerCased = this.matchKeys.reduce((prev, key) => ({
+        ...prev,
+        [key]: stringifyOptionPropValue(node[key]).toLocaleLowerCase(),
+      }), {})
+      const nestedSearchLabel = isRootNode
+        ? lowerCased.label
+        : parentNode.nestedSearchLabel + ' ' + lowerCased.label
+
+      const normalized = this.$set(this.forest.nodeMap, id, createMap())
+      this.$set(normalized, 'id', id)
+      this.$set(normalized, 'label', label)
+      this.$set(normalized, 'level', level)
+      this.$set(normalized, 'ancestors', isRootNode ? [] : [ parentNode ].concat(parentNode.ancestors))
+      this.$set(normalized, 'index', (isRootNode ? [] : parentNode.index).concat(index))
+      this.$set(normalized, 'parentNode', parentNode)
+      this.$set(normalized, 'lowerCased', lowerCased)
+      this.$set(normalized, 'nestedSearchLabel', nestedSearchLabel)
+      this.$set(normalized, 'isDisabled', isDisabled)
+      this.$set(normalized, 'isNew', isNew)
+      this.$set(normalized, 'isMatched', false)
+      this.$set(normalized, 'isHighlighted', false)
+      this.$set(normalized, 'isBranch', isBranch)
+      this.$set(normalized, 'isLeaf', isLeaf)
+      this.$set(normalized, 'isRootNode', isRootNode)
+      this.$set(normalized, 'raw', raw)
+
+      if (isBranch) {
+        const isLoaded = Array.isArray(children)
+
+        this.$set(normalized, 'childrenStates', {
+          ...createAsyncOptionsStates(),
+          isLoaded,
+        })
+        this.$set(normalized, 'isExpanded', typeof isDefaultExpanded === 'boolean'
+          ? isDefaultExpanded
+          : level < this.defaultExpandLevel)
+        this.$set(normalized, 'hasMatchedDescendants', false)
+        this.$set(normalized, 'hasDisabledDescendants', false)
+        this.$set(normalized, 'isExpandedOnSearch', false)
+        this.$set(normalized, 'showAllChildrenOnSearch', false)
+        this.$set(normalized, 'count', {
+          [ALL_CHILDREN]: 0,
+          [ALL_DESCENDANTS]: 0,
+          [LEAF_CHILDREN]: 0,
+          [LEAF_DESCENDANTS]: 0,
+        })
+        this.$set(normalized, 'children', isLoaded
+          ? this.normalize(normalized, children, prevNodeMap)
+          : [])
+
+        if (isDefaultExpanded === true) normalized.ancestors.forEach(ancestor => {
+          ancestor.isExpanded = true
+        })
+
+        if (!isLoaded && typeof this.loadOptions !== 'function') {
+          warning(
+            () => false,
+            () => 'Unloaded branch node detected. "loadOptions" prop is required to load its children.',
+          )
+        } else if (!isLoaded && normalized.isExpanded) {
+          this.loadChildrenOptions(normalized)
+        }
+      }
+
+      normalized.ancestors.forEach(ancestor => ancestor.count[ALL_DESCENDANTS]++)
+      if (isLeaf) normalized.ancestors.forEach(ancestor => ancestor.count[LEAF_DESCENDANTS]++)
+      if (!isRootNode) {
+        parentNode.count[ALL_CHILDREN] += 1
+        if (isLeaf) parentNode.count[LEAF_CHILDREN] += 1
+        if (isDisabled) parentNode.hasDisabledDescendants = true
+      }
+
+      // Preserve previous states.
+      if (prevNodeMap && prevNodeMap[id]) {
+        const prev = prevNodeMap[id]
+
+        normalized.isMatched = prev.isMatched
+        normalized.showAllChildrenOnSearch = prev.showAllChildrenOnSearch
+        normalized.isHighlighted = prev.isHighlighted
+
+        if (prev.isBranch && normalized.isBranch) {
+          normalized.isExpanded = prev.isExpanded
+          normalized.isExpandedOnSearch = prev.isExpandedOnSearch
+          // #97
+          // If `isLoaded` was true, but IS NOT now, we consider this branch node
+          // to be reset to unloaded state by the user of this component.
+          if (prev.childrenStates.isLoaded && !normalized.childrenStates.isLoaded) {
+            // Make sure the node is collapsed, then the user can load its
+            // children again (by expanding).
+            normalized.isExpanded = false
+            // We have reset `childrenStates` and don't want to preserve states here.
+          } else {
+            normalized.childrenStates = { ...prev.childrenStates }
+          }
+        }
+      }
+
+      return normalized
+    },
+
     normalize(parentNode, nodes, prevNodeMap) {
       let normalizedOptions = nodes
         .map(node => [ this.enhancedNormalizer(node), node ])
-        .map(([ node, raw ], index) => {
-          this.checkDuplication(node)
-          this.verifyNodeShape(node)
-
-          const { id, label, children, isDefaultExpanded } = node
-          const isRootNode = parentNode === NO_PARENT_NODE
-          const level = isRootNode ? 0 : parentNode.level + 1
-          const isBranch = Array.isArray(children) || children === null
-          const isLeaf = !isBranch
-          const isDisabled = !!node.isDisabled || (!this.flat && !isRootNode && parentNode.isDisabled)
-          const isNew = !!node.isNew
-          const lowerCased = this.matchKeys.reduce((prev, key) => ({
-            ...prev,
-            [key]: stringifyOptionPropValue(node[key]).toLocaleLowerCase(),
-          }), {})
-          const nestedSearchLabel = isRootNode
-            ? lowerCased.label
-            : parentNode.nestedSearchLabel + ' ' + lowerCased.label
-
-          const normalized = this.$set(this.forest.nodeMap, id, createMap())
-          this.$set(normalized, 'id', id)
-          this.$set(normalized, 'label', label)
-          this.$set(normalized, 'level', level)
-          this.$set(normalized, 'ancestors', isRootNode ? [] : [ parentNode ].concat(parentNode.ancestors))
-          this.$set(normalized, 'index', (isRootNode ? [] : parentNode.index).concat(index))
-          this.$set(normalized, 'parentNode', parentNode)
-          this.$set(normalized, 'lowerCased', lowerCased)
-          this.$set(normalized, 'nestedSearchLabel', nestedSearchLabel)
-          this.$set(normalized, 'isDisabled', isDisabled)
-          this.$set(normalized, 'isNew', isNew)
-          this.$set(normalized, 'isMatched', false)
-          this.$set(normalized, 'isHighlighted', false)
-          this.$set(normalized, 'isBranch', isBranch)
-          this.$set(normalized, 'isLeaf', isLeaf)
-          this.$set(normalized, 'isRootNode', isRootNode)
-          this.$set(normalized, 'raw', raw)
-
-          if (isBranch) {
-            const isLoaded = Array.isArray(children)
-
-            this.$set(normalized, 'childrenStates', {
-              ...createAsyncOptionsStates(),
-              isLoaded,
-            })
-            this.$set(normalized, 'isExpanded', typeof isDefaultExpanded === 'boolean'
-              ? isDefaultExpanded
-              : level < this.defaultExpandLevel)
-            this.$set(normalized, 'hasMatchedDescendants', false)
-            this.$set(normalized, 'hasDisabledDescendants', false)
-            this.$set(normalized, 'isExpandedOnSearch', false)
-            this.$set(normalized, 'showAllChildrenOnSearch', false)
-            this.$set(normalized, 'count', {
-              [ALL_CHILDREN]: 0,
-              [ALL_DESCENDANTS]: 0,
-              [LEAF_CHILDREN]: 0,
-              [LEAF_DESCENDANTS]: 0,
-            })
-            this.$set(normalized, 'children', isLoaded
-              ? this.normalize(normalized, children, prevNodeMap)
-              : [])
-
-            if (isDefaultExpanded === true) normalized.ancestors.forEach(ancestor => {
-              ancestor.isExpanded = true
-            })
-
-            if (!isLoaded && typeof this.loadOptions !== 'function') {
-              warning(
-                () => false,
-                () => 'Unloaded branch node detected. "loadOptions" prop is required to load its children.',
-              )
-            } else if (!isLoaded && normalized.isExpanded) {
-              this.loadChildrenOptions(normalized)
-            }
-          }
-
-          normalized.ancestors.forEach(ancestor => ancestor.count[ALL_DESCENDANTS]++)
-          if (isLeaf) normalized.ancestors.forEach(ancestor => ancestor.count[LEAF_DESCENDANTS]++)
-          if (!isRootNode) {
-            parentNode.count[ALL_CHILDREN] += 1
-            if (isLeaf) parentNode.count[LEAF_CHILDREN] += 1
-            if (isDisabled) parentNode.hasDisabledDescendants = true
-          }
-
-          // Preserve previous states.
-          if (prevNodeMap && prevNodeMap[id]) {
-            const prev = prevNodeMap[id]
-
-            normalized.isMatched = prev.isMatched
-            normalized.showAllChildrenOnSearch = prev.showAllChildrenOnSearch
-            normalized.isHighlighted = prev.isHighlighted
-
-            if (prev.isBranch && normalized.isBranch) {
-              normalized.isExpanded = prev.isExpanded
-              normalized.isExpandedOnSearch = prev.isExpandedOnSearch
-              // #97
-              // If `isLoaded` was true, but IS NOT now, we consider this branch node
-              // to be reset to unloaded state by the user of this component.
-              if (prev.childrenStates.isLoaded && !normalized.childrenStates.isLoaded) {
-                // Make sure the node is collapsed, then the user can load its
-                // children again (by expanding).
-                normalized.isExpanded = false
-                // We have reset `childrenStates` and don't want to preserve states here.
-              } else {
-                normalized.childrenStates = { ...prev.childrenStates }
-              }
-            }
-          }
-
-          return normalized
-        })
+        .map((res, index) => this.mapToNode(res, index, parentNode, prevNodeMap))
 
       if (this.branchNodesFirst) {
         const branchNodes = normalizedOptions.filter(option => option.isBranch)
@@ -1682,14 +1684,21 @@ export default {
           return this.getNode(id).childrenStates.isLoading
         },
         start: () => {
-          this.getNode(id).childrenStates.isLoading = true
-          this.getNode(id).childrenStates.loadingError = ''
+          const n = this.getNode(id)
+
+          n.childrenStates.isLoading = true
+          n.childrenStates.loadingError = ''
         },
         succeed: () => {
-          this.getNode(id).childrenStates.isLoaded = true
+          const n = this.getNode(id)
+          n.children = raw.children ? this.normalize(parentNode, raw.children, this.forest.nodeMap) : []
+          n.childrenStates.isLoaded = true
+          this.fixSelectedNodeIds(this.internalValue)
         },
         fail: err => {
-          this.getNode(id).childrenStates.loadingError = getErrorMessage(err)
+          const n = this.getNode(id)
+          n.children = []
+          n.childrenStates.loadingError = getErrorMessage(err)
         },
         end: () => {
           this.getNode(id).childrenStates.isLoading = false
