@@ -3,6 +3,7 @@ This is fork of https://github.com/havunen/vue-treeselect
 - Only modern browser targets supported
 - Added ESM package entry
 - Removed babel runtime helpers 
+- Optimized performance of opening tree branches
 
 ### Features
 

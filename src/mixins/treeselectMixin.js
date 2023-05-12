@@ -723,13 +723,17 @@ export default {
       } else if (this.valueConsistsOf === ALL_WITH_INDETERMINATE) {
         const indeterminateNodeIds = []
         internalValue = this.forest.selectedNodeIds.slice()
-        this.selectedNodes.forEach(selectedNode => {
-          selectedNode.ancestors.forEach(ancestor => {
-            if (includes(indeterminateNodeIds, ancestor.id)) return
-            if (includes(internalValue, ancestor.id)) return
+        for (const selectedNode of this.selectedNodes) {
+          for (const ancestor of selectedNode.ancestors) {
+            if (includes(indeterminateNodeIds, ancestor.id)) {
+              continue
+            }
+            if (includes(internalValue, ancestor.id)) {
+              continue
+            }
             indeterminateNodeIds.push(ancestor.id)
-          })
-        })
+          }
+        }
         internalValue.push(...indeterminateNodeIds)
       }
 
@@ -906,12 +910,12 @@ export default {
           'autoDeselectDescendants',
         ]
 
-        propNames.forEach(propName => {
+        for (const propName of propNames) {
           warning(
             () => !this[propName],
             () => `"${propName}" only applies to flat mode.`,
           )
-        })
+        }
       }
     },
 
@@ -1035,13 +1039,13 @@ export default {
       if (this.single || this.flat || this.disableBranchNodes || this.valueConsistsOf === ALL) {
         nextSelectedNodeIds = nodeIdListOfPrevValue
       } else if (this.valueConsistsOf === BRANCH_PRIORITY) {
-        nodeIdListOfPrevValue.forEach(nodeId => {
+        for (const nodeId of nodeIdListOfPrevValue) {
           nextSelectedNodeIds.push(nodeId)
           const node = this.getNode(nodeId)
           if (node.isBranch) this.traverseDescendantsBFS(node, descendant => {
             nextSelectedNodeIds.push(descendant.id)
           })
-        })
+        }
       } else if (this.valueConsistsOf === LEAF_PRIORITY) {
         const map = createMap()
         const queue = nodeIdListOfPrevValue.slice()
@@ -1081,14 +1085,14 @@ export default {
     keepDataOfSelectedNodes(prevNodeMap) {
       // In case there is any selected node that is not present in the new `options` array.
       // It could be useful for async search mode.
-      this.forest.selectedNodeIds.forEach(id => {
-        if (!prevNodeMap[id]) return
+      for (const id of this.forest.selectedNodeIds) {
+        if (!prevNodeMap[id]) continue
         const node = {
           ...prevNodeMap[id],
           isFallbackNode: true,
         }
         this.$set(this.forest.nodeMap, id, node)
-      })
+      }
     },
 
     isSelected(node) {
@@ -1110,28 +1114,28 @@ export default {
 
     traverseDescendantsDFS(parentNode, callback) {
       if (!parentNode.isBranch) return
-      parentNode.children.forEach(child => {
+      for (const child of parentNode.children) {
         // deep-level node first
         this.traverseDescendantsDFS(child, callback)
         callback(child)
-      })
+      }
     },
 
     traverseAllNodesDFS(callback) {
-      this.forest.normalizedOptions.forEach(rootNode => {
+      for (const rootNode of this.forest.normalizedOptions) {
         // deep-level node first
         this.traverseDescendantsDFS(rootNode, callback)
         callback(rootNode)
-      })
+      }
     },
 
     traverseAllNodesByIndex(callback) {
       const walk = parentNode => {
-        parentNode.children.forEach(child => {
+        for (const child of parentNode.children) {
           if (callback(child) !== false && child.isBranch) {
             walk(child)
           }
-        })
+        }
       }
 
       // To simplify the code logic of traversal,
@@ -1237,8 +1241,11 @@ export default {
 
         if (node.isMatched) {
           this.localSearch.noResults = false
-          node.ancestors.forEach(ancestor => this.localSearch.countMap[ancestor.id][ALL_DESCENDANTS]++)
-          if (node.isLeaf) node.ancestors.forEach(ancestor => this.localSearch.countMap[ancestor.id][LEAF_DESCENDANTS]++)
+
+          for (const ancestor of node.ancestors) {
+            this.localSearch.countMap[ancestor.id][ALL_DESCENDANTS]++
+          }
+
           if (node.parentNode !== NO_PARENT_NODE) {
             this.localSearch.countMap[node.parentNode.id][ALL_CHILDREN] += 1
             // istanbul ignore else
@@ -1481,9 +1488,9 @@ export default {
 
     buildForestState() {
       const selectedNodeMap = createMap()
-      this.forest.selectedNodeIds.forEach(selectedNodeId => {
+      for (const selectedNodeId of this.forest.selectedNodeIds) {
         selectedNodeMap[selectedNodeId] = true
-      })
+      }
       this.forest.selectedNodeMap = selectedNodeMap
 
       const checkedStateMap = createMap()
@@ -1492,17 +1499,17 @@ export default {
           checkedStateMap[node.id] = UNCHECKED
         })
 
-        this.selectedNodes.forEach(selectedNode => {
+        for (const selectedNode of this.selectedNodes) {
           checkedStateMap[selectedNode.id] = CHECKED
 
           if (!this.flat && !this.disableBranchNodes) {
-            selectedNode.ancestors.forEach(ancestorNode => {
+            for (const ancestorNode of selectedNode.ancestors) {
               if (!this.isSelected(ancestorNode)) {
                 checkedStateMap[ancestorNode.id] = INDETERMINATE
               }
-            })
+            }
           }
-        })
+        }
       }
       this.forest.checkedStateMap = checkedStateMap
     },
@@ -1575,9 +1582,11 @@ export default {
           ? this.normalize(normalized, children, prevNodeMap)
           : [])
 
-        if (isDefaultExpanded === true) normalized.ancestors.forEach(ancestor => {
-          ancestor.isExpanded = true
-        })
+        if (isDefaultExpanded === true) {
+          for (const ancestor of normalized.ancestors) {
+            ancestor.isExpanded = true
+          }
+        }
 
         if (!isLoaded && typeof this.loadOptions !== 'function') {
           warning(
@@ -1589,8 +1598,15 @@ export default {
         }
       }
 
-      normalized.ancestors.forEach(ancestor => ancestor.count[ALL_DESCENDANTS]++)
-      if (isLeaf) normalized.ancestors.forEach(ancestor => ancestor.count[LEAF_DESCENDANTS]++)
+      for (const ancestor of normalized.ancestors) {
+        ancestor.count[ALL_DESCENDANTS]++
+      }
+
+      if (isLeaf) {
+        for (const ancestor of normalized.ancestors) {
+          ancestor.count[LEAF_DESCENDANTS]++
+        }
+      }
       if (!isRootNode) {
         parentNode.count[ALL_CHILDREN] += 1
         if (isLeaf) parentNode.count[LEAF_CHILDREN] += 1
@@ -1823,9 +1839,11 @@ export default {
         this.addValue(node)
 
         if (this.autoSelectAncestors) {
-          node.ancestors.forEach(ancestor => {
-            if (!this.isSelected(ancestor) && !ancestor.isDisabled) this.addValue(ancestor)
-          })
+          for (const ancestor of node.ancestors) {
+            if (!this.isSelected(ancestor) && !ancestor.isDisabled) {
+              this.addValue(ancestor)
+            }
+          }
         } else if (this.autoSelectDescendants) {
           this.traverseDescendantsBFS(node, descendant => {
             if (!this.isSelected(descendant) && !descendant.isDisabled) this.addValue(descendant)
@@ -1871,9 +1889,11 @@ export default {
         this.removeValue(node)
 
         if (this.autoDeselectAncestors) {
-          node.ancestors.forEach(ancestor => {
-            if (this.isSelected(ancestor) && !ancestor.isDisabled) this.removeValue(ancestor)
-          })
+          for (const ancestor of node.ancestors) {
+            if (this.isSelected(ancestor) && !ancestor.isDisabled) {
+              this.removeValue(ancestor)
+            }
+          }
         } else if (this.autoDeselectDescendants) {
           this.traverseDescendantsBFS(node, descendant => {
             if (this.isSelected(descendant) && !descendant.isDisabled) this.removeValue(descendant)

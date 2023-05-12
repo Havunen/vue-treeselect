@@ -1,6 +1,6 @@
 <script>
   import Vue from 'vue'
-  import { watchSize, setupResizeAndScrollEventListeners, find } from '../utils'
+  import { watchSize, setupResizeAndScrollEventListeners } from '../utils'
   import Menu from './Menu'
 
   const PortalTarget = {
@@ -105,10 +105,8 @@
         const left = Math.round(controlRect.left - portalTargetRect.left) + 'px'
         const top = Math.round(controlRect.top - portalTargetRect.top + offsetY) + 'px'
         const menuContainerStyle = this.$refs.menu.$refs['menu-container'].style
-        const transformVariations = [ 'transform', 'webkitTransform', 'MozTransform', 'msTransform' ]
-        const transform = find(transformVariations, t => t in document.body.style)
 
-        menuContainerStyle[transform] = `translate(${left}, ${top})`
+        menuContainerStyle.transform = `translate(${left}, ${top})`
       },
     },
 
