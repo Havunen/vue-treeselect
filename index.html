@@ -40,13 +40,13 @@
       gtag('config', 'UA-108169693-1');
     </script>
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600|Dosis:300,500">
-  <script defer="defer" src="//cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script><script defer="defer" src="/static/js/app.ef3d826413f2d1053ffc.js"></script><link href="/static/css/app.8a90999acb560e06b2f4.css" rel="stylesheet"></head>
+  <script defer="defer" src="//cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script><script defer="defer" src="/static/js/app.2ede19336af90f0152e4.js"></script><link href="/static/css/app.8a90999acb560e06b2f4.css" rel="stylesheet"></head>
   <body>
     <div id="app">
       <header class="site-header">
         <div class="container" id="header">
           <div class="site-header-logo"><a class="site-header-logo-link" href="https://vue-treeselect.js.org/">Vue<span class="site-header-logo-component-name">Treeselect</span></a></div>
-          <nav class="site-header-nav"><a class="site-header-nav-item" href="https://github.com/riophae/vue-treeselect/releases">v0.4.0</a><span class="site-header-nav-item"><a class="github-button" href="https://github.com/riophae/vue-treeselect" data-show-count="true" aria-label="Star riophae/vue-treeselect on GitHub">Star</a></span></nav>
+          <nav class="site-header-nav"><a class="site-header-nav-item" href="https://github.com/havunen/vue-treeselect/releases">v0.4.0</a><span class="site-header-nav-item"><a class="github-button" href="https://github.com/havunen/vue-treeselect" data-show-count="true" aria-label="Star havunen/vue-treeselect on GitHub">Star</a></span></nav>
         </div>
       </header>
       <div class="container">
@@ -97,7 +97,7 @@
             <h1 id="introduction">Introduction<a class="anchor" href="#introduction">
                 <anchor></anchor></a>
             </h1>
-            <section><p><a href="https://github.com/riophae/vue-treeselect">vue-treeselect</a> is a multi-select component with nested options support for <a href="https://www.vuejs.org">Vue.js</a>.</p>
+            <section><p><a href="https://github.com/havunen/vue-treeselect">vue-treeselect</a> is a multi-select component with nested options support for <a href="https://www.vuejs.org">Vue.js</a>.</p>
 <ul>
 <li>Single &amp; multiple select with nested options support</li>
 <li>Fuzzy matching</li>
@@ -105,7 +105,7 @@
 <li>Delayed loading (load data of deep level options only when needed)</li>
 <li>Keyboard support (navigate using <kbd>Arrow Up</kbd> &amp; <kbd>Arrow Down</kbd> keys, select option using <kbd>Enter</kbd> key, etc.)</li>
 <li>Rich options &amp; highly customizable</li>
-<li>Supports <a href="https://github.com/riophae/vue-treeselect#browser-compatibility">a wide range of browsers</a></li>
+<li>Supports <a href="https://github.com/havunen/vue-treeselect#browser-compatibility">a wide range of browsers</a></li>
 </ul>
 <p><em>Requires Vue 2.2+</em></p>
 
@@ -115,7 +115,7 @@
             </h1>
             <section>
               <p>It's recommended to install vue-treeselect via npm, and build your app using a bundler like <a href="https://webpack.js.org/">webpack</a>.</p>
-<pre><code class="language-bash">npm install --save @riophae/vue-treeselect
+<pre><code class="language-bash">npm install --save @havunen/vue-treeselect
 </code></pre>
               <p>This example shows how to integrate vue-treeselect with your <a href="https://vuejs.org/v2/guide/single-file-components.html">Vue SFCs</a>.</p>
 <pre><code class="language-vue">&lt;!-- Vue SFC --&gt;
@@ -127,9 +127,9 @@
 
 &lt;script&gt;
   // import the component
-  import Treeselect from '@riophae/vue-treeselect'
+  import Treeselect from '@havunen/vue-treeselect'
   // import the styles
-  import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+  import '@havunen/vue-treeselect/dist/vue-treeselect.css'
 
   export default {
     // register the component
@@ -167,8 +167,8 @@
     &lt;!-- include Vue 2.x --&gt;
     &lt;script src=&quot;https://cdn.jsdelivr.net/npm/vue@^2&quot;&gt;&lt;/script&gt;
     &lt;!-- include vue-treeselect &amp; its styles. you can change the version tag to better suit your needs. --&gt;
-    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@^0.4.0/dist/vue-treeselect.umd.min.js&quot;&gt;&lt;/script&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@^0.4.0/dist/vue-treeselect.min.css&quot;&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/@havunen/vue-treeselect@^0.4.0/dist/vue-treeselect.umd.min.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/@havunen/vue-treeselect@^0.4.0/dist/vue-treeselect.min.css&quot;&gt;
   &lt;/head&gt;
   &lt;body&gt;
     &lt;div id=&quot;app&quot;&gt;
@@ -397,7 +397,7 @@ export default {
   v-model=&quot;value&quot;
   /&gt;
 </code></template>
-                <template slot="javascript"><code v-pre>import { LOAD_CHILDREN_OPTIONS } from '@riophae/vue-treeselect'
+                <template slot="javascript"><code v-pre>import { LOAD_CHILDREN_OPTIONS } from '@havunen/vue-treeselect'
 
 // We just use `setTimeout()` here to simulate an async operation
 // instead of requesting a real API server for demo purpose.
@@ -474,7 +474,7 @@ export default {
   placeholder=&quot;Open the menu...&quot;
   /&gt;
 </code></template>
-                <template slot="javascript"><code v-pre>import { LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
+                <template slot="javascript"><code v-pre>import { LOAD_ROOT_OPTIONS } from '@havunen/vue-treeselect'
 
 const sleep = d =&gt; new Promise(r =&gt; setTimeout(r, d))
 let called = false
@@ -521,7 +521,7 @@ export default {
   :load-options=&quot;loadOptions&quot;
   /&gt;
 </code></template>
-                <template slot="javascript"><code v-pre>import { ASYNC_SEARCH } from '@riophae/vue-treeselect'
+                <template slot="javascript"><code v-pre>import { ASYNC_SEARCH } from '@havunen/vue-treeselect'
 
 const simulateAsyncOperation = fn =&gt; {
   setTimeout(fn, 2000)
