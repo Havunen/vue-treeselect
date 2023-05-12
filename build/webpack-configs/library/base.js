@@ -14,7 +14,6 @@ const baseLibraryWebpackConfig = merge(baseWebpackConfig, {
   output: {
     path: config.library.assetsRoot,
     publicPath: config.library.assetsPublicPath,
-    library: 'VueTreeselect',
   },
 
   plugins: [

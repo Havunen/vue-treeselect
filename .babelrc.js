@@ -5,8 +5,7 @@ module.exports = api => {
     [ '@babel/preset-env', { modules: false } ],
   ]
   const plugins = [
-    'transform-vue-jsx',
-    '@babel/plugin-transform-runtime',
+    'transform-vue-jsx'
   ]
 
   if (process.env.NODE_ENV === 'testing') {

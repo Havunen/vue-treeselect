@@ -109,10 +109,6 @@
         } else {
           // Keep the same behavior here.
           setTimeout(() => handler(result), 0)
-          // Also, note that IE9 requires:
-          //   setTimeout(() => fn(...args), delay)
-          // Instead of:
-          //   setTimeout(fn, delay, ...args)
         }
       }),
 

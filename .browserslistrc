@@ -1,4 +1,6 @@
 # Browsers that we support
 
-> 0.5%
-IE >= 9
+edge > 80
+chrome > 100
+firefox > 100
+not dead

@@ -1,6 +1,8 @@
 This is fork of https://github.com/havunen/vue-treeselect
 
 - Only modern browser targets supported
+- Added ESM package entry
+- Removed babel runtime helpers 
 
 ### Features
 
@@ -10,7 +12,6 @@ This is fork of https://github.com/havunen/vue-treeselect
 - Delayed loading (load data of deep level options only when needed)
 - Keyboard support (navigate using <kbd>Arrow Up</kbd> & <kbd>Arrow Down</kbd> keys, select option using <kbd>Enter</kbd> key, etc.)
 - Rich options & highly customizable
-- Supports a wide range of browsers (see [below](#browser-compatibility))
 - RTL support
 
 *Requires Vue 2.2+*
@@ -130,7 +131,6 @@ Note: please use a desktop browser since the website hasn't been optimized for m
 - Chrome
 - Edge
 - Firefox
-- IE ≥ 9
 - Safari
 
 It should function well on IE9, but the style can be slightly broken due to the lack of support of some relatively new CSS features, such as `transition` and `animation`. Nevertheless it should look 90% same as on modern browsers.
