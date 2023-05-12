@@ -1,23 +1,12 @@
-const path = require('path')
+const path = require('node:path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-const resolve = exports.resolve = dir => (
+exports.resolve = dir => (
   path.join(__dirname, '../..', dir)
 )
 
-exports.eslintLoader = dir => ({
-  test: /\.(js|vue)$/,
-  loader: 'eslint-loader',
-  enforce: 'pre',
-  include: [ resolve(dir) ],
-  options: {
-    formatter: require('eslint-friendly-formatter'),
-    cache: true,
-  },
-})
-
 exports.styleLoaders = (options = {}) => {
-  const loaders = [ 'cache-loader', {
+  const loaders = [ {
     loader: 'css-loader',
     options: {
       importLoaders: 1,
@@ -35,7 +24,6 @@ exports.styleLoaders = (options = {}) => {
     },
   } ]
 
-  // These should go before `cache-loader`.
   if (options.extract) {
     loaders.unshift(MiniCssExtractPlugin.loader)
   } else {
@@ -62,7 +50,7 @@ exports.withCacheLoader = rule => {
       : [ { loader, options } ]
 
   return {
-    use: [ 'cache-loader', ...loaders ],
+    use: [ ...loaders ],
     ...rest,
   }
 }

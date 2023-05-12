@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-const path = require('path')
+const path = require('node:path')
 const open = require('open')
 const express = require('express')
 const webpack = require('webpack')
@@ -23,12 +23,12 @@ const devMiddleware = require('webpack-dev-middleware')(compiler, {
 const hotMiddleware = require('webpack-hot-middleware')(compiler, {
   log: () => { /* empty */ },
 })
-// force page reload when html-webpack-plugin template changes
-compiler.plugin('compilation', compilation => {
-  compilation.plugin('html-webpack-plugin-after-emit', () => {
-    hotMiddleware.publish({ action: 'reload' })
-  })
-})
+// // force page reload when html-webpack-plugin template changes
+// compiler.plugin('compilation', compilation => {
+//   compilation.plugin('html-webpack-plugin-after-emit', () => {
+//     hotMiddleware.publish({ action: 'reload' })
+//   })
+// })
 
 // handle fallback for HTML5 history API
 app.use(require('connect-history-api-fallback')())

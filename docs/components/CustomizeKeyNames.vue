@@ -18,6 +18,7 @@
           name: 'aa',
         } ],
       } ],
+
       normalizer(node) {
         return {
           id: node.key,

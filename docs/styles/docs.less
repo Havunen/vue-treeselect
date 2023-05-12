@@ -1,6 +1,7 @@
 /* stylelint-disable declaration-no-important */
 
 @import "~material-colors/dist/colors.less";
+@import "~easings-css/easings.less";
 
 /* Utils */
 
@@ -64,7 +65,7 @@ pre, code {
 
 code:not([class*="language-"]) {
   padding: 2px 3px;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgb(0 0 0 / 4%);
   border-radius: 3px;
   font-size: 12px;
 }
@@ -93,7 +94,7 @@ a {
 }
 
 a img {
-  border: 0;
+  border: none;
 }
 
 h1, h2, h3, h4 {
@@ -193,7 +194,7 @@ kbd {
   font-size: 24px;
   font-family: Dosis, "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgb(255 255 255 / 90%);
   color: #2c3e50;
 }
 
@@ -246,7 +247,7 @@ kbd {
   text-decoration: none;
 
   svg {
-    color: rgba(0, 0, 0, 0.25);
+    color: rgb(0 0 0 / 25%);
   }
 
   svg:hover {
@@ -320,7 +321,7 @@ p.tip {
   width: 100%;
   background: #f8f8f8;
   box-sizing: border-box;
-  color: rgba(0, 0, 0, 0.6);
+  color: rgb(0 0 0 / 60%);
   font-weight: 700;
   font-size: 12px;
   line-height: 1;
@@ -360,8 +361,8 @@ p.tip {
   pre.result {
     margin: 1em 0;
     padding: 1em 1.5em;
-    background: rgba(0, 0, 0, 0.025);
-    border: 0;
+    background: rgb(0 0 0 / 2.5%);
+    border: none;
     border-radius: 5px;
     font-size: 12px;
   }
@@ -381,7 +382,7 @@ p.tip {
     margin: 0;
     width: 100%;
     max-height: none;
-    border: 0;
+    border: none;
     background: none;
 
     &.current {

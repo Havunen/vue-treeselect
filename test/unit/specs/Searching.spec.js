@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils'
 import sleep from 'yaku/lib/sleep'
-import { typeSearchText, findMenu, findVisibleOptions, findOptionByNodeId, findOptionArrowByNodeId } from './shared'
 import Treeselect from '@src/components/Treeselect'
 import { INPUT_DEBOUNCE_DELAY } from '@src/constants'
+import { typeSearchText, findMenu, findVisibleOptions, findOptionByNodeId, findOptionArrowByNodeId } from './shared'
 
 describe('Searching', () => {
   describe('local search', () => {
@@ -90,6 +90,7 @@ describe('Searching', () => {
       const { vm } = wrapper
 
       vm.openMenu()
+      await vm.$nextTick()
 
       // not rotated by default
       expectArrowToBeRotatedOrNot(false)
@@ -153,8 +154,10 @@ describe('Searching', () => {
       })
       const { vm } = wrapper
 
-      it('preparation', () => {
+      it('preparation', async () => {
         vm.openMenu()
+        await vm.$nextTick()
+
         expect(vm.menu.isOpen).toBe(true)
       })
 
@@ -306,10 +309,7 @@ describe('Searching', () => {
     async function typeAndAssert(wrapper, searchText, idListOfNodesThatShouldBeMatched) {
       await typeSearchText(wrapper, searchText)
       const { nodeMap } = wrapper.vm.forest
-      expect(nodeMap).toEqual(Object.keys(nodeMap).reduce((prev, id) => ({
-        ...prev,
-        [id]: jasmine.objectContaining({ isMatched: idListOfNodesThatShouldBeMatched.includes(id) }),
-      }), {}))
+      expect(nodeMap).toEqual(Object.fromEntries(Object.keys(nodeMap).map(id => [ id, jasmine.objectContaining({ isMatched: idListOfNodesThatShouldBeMatched.includes(id) }) ])))
     }
 
     it('match more properties than only `label`', async () => {
@@ -341,7 +341,7 @@ describe('Searching', () => {
 
     it('should properly handle value of types other than string', async () => {
       const specialValues = [
-        1, NaN,
+        1, Number.NaN,
         null, undefined,
         {}, [],
         () => { /* empty */ },
@@ -391,7 +391,7 @@ describe('Searching', () => {
       await typeAndAssert(wrapper, 'b', [ 'b' ])
     })
 
-    it('should reinitialize options after the value of `matchKeys` prop changes', () => {
+    it('should reinitialize options after the value of `matchKeys` prop changes', async () => {
       const wrapper = mount(Treeselect, {
         propsData: {
           searchable: true,
@@ -416,7 +416,7 @@ describe('Searching', () => {
         }),
       })
 
-      wrapper.setProps({ matchKeys: [ 'id' ] })
+      await wrapper.setProps({ matchKeys: [ 'id' ] })
       expect(vm.forest.nodeMap).toEqual({
         A: jasmine.objectContaining({
           lowerCased: { id: 'a' },
@@ -463,6 +463,8 @@ describe('Searching', () => {
     })
 
     await wrapper.vm.openMenu()
+    await wrapper.vm.$nextTick()
+
     await typeAndAssert('a', [ 'a', 'aa', 'ab' ])
     await typeAndAssert('ab', [ 'ab' ])
     await typeAndAssert('b', [ 'ab', 'b' ])
@@ -798,7 +800,7 @@ describe('Searching', () => {
       })
 
       it('when cacheOptions=false', async () => {
-        wrapper.setProps({ cacheOptions: false })
+        await wrapper.setProps({ cacheOptions: false })
         await typeAndAssert('a', false)
         await typeAndAssert('b', false)
         await typeAndAssert('a', false)
@@ -806,7 +808,7 @@ describe('Searching', () => {
       })
 
       it('when cacheOptions=true', async () => {
-        wrapper.setProps({ cacheOptions: true })
+        await wrapper.setProps({ cacheOptions: true })
         await typeAndAssert('a', false)
         await typeAndAssert('b', false)
         await typeAndAssert('a', true)
@@ -814,19 +816,19 @@ describe('Searching', () => {
       })
 
       it('change value of cacheOptions', async () => {
-        wrapper.setProps({ cacheOptions: true })
+        await wrapper.setProps({ cacheOptions: true })
         await typeAndAssert('a', false)
         await typeAndAssert('b', false)
         await typeAndAssert('a', true)
         await typeAndAssert('b', true)
 
-        wrapper.setProps({ cacheOptions: false })
+        await wrapper.setProps({ cacheOptions: false })
         await typeAndAssert('a', false)
         await typeAndAssert('b', false)
         await typeAndAssert('a', false)
         await typeAndAssert('b', false)
 
-        wrapper.setProps({ cacheOptions: true })
+        await wrapper.setProps({ cacheOptions: true })
         await typeAndAssert('a', true)
         await typeAndAssert('b', true)
         await typeAndAssert('a', true)
@@ -869,20 +871,20 @@ describe('Searching', () => {
 
       await run([
         [ 0, async () => {
-          const p = typeSearchText(wrapper, 'a')
+          const p = await typeSearchText(wrapper, 'a')
           await vm.$nextTick()
           expect(calls).toEqual([ 'a' ])
           return p
         } ],
         [ 1 / 3, async () => {
-          const p = typeSearchText(wrapper, 'b')
+          const p = await typeSearchText(wrapper, 'b')
           await vm.$nextTick()
           expect(calls).toEqual([ 'a', 'b' ])
           return p
         } ],
         [ 2 / 3, async () => {
           expect(vm.remoteSearch.a.isLoading).toBe(true)
-          const p = typeSearchText(wrapper, 'a')
+          const p = await typeSearchText(wrapper, 'a')
           await vm.$nextTick()
           expect(calls).toEqual([ 'a', 'b' ])
           return p
@@ -890,20 +892,20 @@ describe('Searching', () => {
         [ 1, async () => {
           expect(vm.remoteSearch.a.isLoaded).toBe(true)
           expect(vm.remoteSearch.b.isLoading).toBe(true)
-          const p = typeSearchText(wrapper, 'b')
+          const p = await typeSearchText(wrapper, 'b')
           await vm.$nextTick()
           expect(calls).toEqual([ 'a', 'b' ])
           return p
         } ],
         [ 4 / 3, async () => {
           expect(vm.remoteSearch.b.isLoaded).toBe(true)
-          const p = typeSearchText(wrapper, 'a')
+          const p = await typeSearchText(wrapper, 'a')
           await vm.$nextTick()
           expect(calls).toEqual([ 'a', 'b', 'a' ])
           return p
         } ],
         [ 5 / 3, async () => {
-          const p = typeSearchText(wrapper, 'b')
+          const p = await typeSearchText(wrapper, 'b')
           await vm.$nextTick()
           expect(calls).toEqual([ 'a', 'b', 'a', 'b' ])
           return p

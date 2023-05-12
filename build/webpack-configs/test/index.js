@@ -1,4 +1,4 @@
-const merge = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const utils = require('../utils')
 const baseWebpackConfig = require('../base')
 
@@ -9,7 +9,6 @@ module.exports = merge(baseWebpackConfig, {
 
   module: {
     rules: [
-      utils.eslintLoader('test'),
       utils.styleLoaders(),
     ],
   },

@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { leftClick, findCheckboxByNodeId, findLabelContainerByNodeId } from './shared'
 import Treeselect from '@src/components/Treeselect'
+import { leftClick, findCheckboxByNodeId, findLabelContainerByNodeId } from './shared'
 
 describe('Events', () => {
   describe('select & deselect', () => {
@@ -22,7 +22,7 @@ describe('Events', () => {
       children: [ aa, ab ],
     }
 
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = mount(Treeselect, {
         propsData: {
           options: [ a ],
@@ -32,30 +32,31 @@ describe('Events', () => {
         },
       })
       wrapper.vm.openMenu()
+      await wrapper.vm.$nextTick()
     })
 
-    it('click on option label or checkbox', () => {
-      leftClick(findLabelContainerByNodeId(wrapper, 'aa'))
+    it('click on option label or checkbox', async () => {
+      await leftClick(findLabelContainerByNodeId(wrapper, 'aa'))
       expect(wrapper.emitted().select).toEqual([
         [ aa, 'test' ],
       ])
 
-      leftClick(findCheckboxByNodeId(wrapper, 'aa'))
+      await leftClick(findCheckboxByNodeId(wrapper, 'aa'))
       expect(wrapper.emitted().deselect).toEqual([
         [ aa, 'test' ],
       ])
     })
 
-    it('click on disabled option', () => {
-      leftClick(findLabelContainerByNodeId(wrapper, 'ab'))
+    it('click on disabled option', async () => {
+      await leftClick(findLabelContainerByNodeId(wrapper, 'ab'))
       expect(wrapper.emitted().deselect).toBeUndefined()
     })
 
-    it('click on value remove icon', () => {
-      wrapper.setProps({ value: [ 'a' ] })
+    it('click on value remove icon', async () => {
+      await wrapper.setProps({ value: [ 'a' ] })
 
       // click on "×" of a
-      leftClick(wrapper.find('.vue-treeselect__value-remove'))
+      await leftClick(wrapper.find('.vue-treeselect__value-remove'))
       expect(wrapper.emitted().deselect).toEqual([
         [ a, 'test' ],
       ])

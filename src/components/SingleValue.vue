@@ -16,6 +16,7 @@
           : node.label
       },
     },
+
     render() {
       const { instance, $parent: { renderValueContainer } } = this
       const shouldShowValue = instance.hasValue && !instance.trigger.searchQuery

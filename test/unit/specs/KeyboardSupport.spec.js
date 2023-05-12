@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { mount } from '@vue/test-utils'
 import sleep from 'yaku/lib/sleep'
+import Treeselect from '@src/components/Treeselect'
 import {
   typeSearchText,
   pressBackspaceKey,
@@ -15,10 +16,9 @@ import {
   pressDeleteKey,
   pressAKey,
 } from './shared'
-import Treeselect from '@src/components/Treeselect'
 
 describe('Keyboard Support', () => {
-  it('(enter + arrows + home + end) keys should trigger opening menu', () => {
+  it('(enter + arrows + home + end) keys should trigger opening menu', async () => {
     const keyPressors = [
       pressEnterKey,
       pressArrowDown,
@@ -29,7 +29,7 @@ describe('Keyboard Support', () => {
       pressEndKey,
     ]
 
-    keyPressors.forEach(keyPressor => {
+    for (const keyPressor of keyPressors) {
       const wrapper = mount(Treeselect, {
         propsData: {
           options: [],
@@ -37,9 +37,9 @@ describe('Keyboard Support', () => {
       })
       const { vm } = wrapper
 
-      keyPressor(wrapper)
+      await keyPressor(wrapper)
       expect(vm.menu.isOpen).toBe(true)
-    })
+    }
   })
 
   describe('backspace key', () => {
@@ -75,13 +75,13 @@ describe('Keyboard Support', () => {
     it('should do nothing if search input has value', async () => {
       await typeSearchText(wrapper, 'test')
       expect(wrapper.vm.trigger.searchQuery).toBe('test')
-      pressBackspaceKey(wrapper)
+      await pressBackspaceKey(wrapper)
       expect(wrapper.vm.forest.selectedNodeIds).toEqual([ 'a', 'b' ])
     })
 
-    it('should do nothing when backspaceRemoves=false', () => {
-      wrapper.setProps({ backspaceRemoves: false })
-      pressBackspaceKey(wrapper)
+    it('should do nothing when backspaceRemoves=false', async () => {
+      await wrapper.setProps({ backspaceRemoves: false })
+      await pressBackspaceKey(wrapper)
       expect(wrapper.vm.forest.selectedNodeIds).toEqual([ 'a', 'b' ])
     })
   })
@@ -121,32 +121,32 @@ describe('Keyboard Support', () => {
     it('select or deselect option using enter key (single-select)', async () => {
       const { wrapper, vm } = await createInstance()
 
-      wrapper.setProps({ multiple: false })
+      await wrapper.setProps({ multiple: false })
 
-      pressEnterKey(wrapper)
+      await pressEnterKey(wrapper)
       expect(vm.internalValue).toEqual([ 'a' ])
-      pressEnterKey(wrapper)
+      await pressEnterKey(wrapper)
       expect(vm.internalValue).toEqual([ 'a' ])
 
       vm.setCurrentHighlightedOption(vm.forest.nodeMap.b)
       expect(vm.menu.current).toBe('b')
-      pressEnterKey(wrapper)
+      await pressEnterKey(wrapper)
       expect(vm.internalValue).toEqual([ 'b' ])
     })
 
     it('select or deselect option using enter key (multi-select)', async () => {
       const { wrapper, vm } = await createInstance()
 
-      wrapper.setProps({ multiple: true })
+      await wrapper.setProps({ multiple: true })
 
-      pressEnterKey(wrapper)
+      await pressEnterKey(wrapper)
       expect(vm.internalValue).toEqual([ 'a' ])
-      pressEnterKey(wrapper)
+      await pressEnterKey(wrapper)
       expect(vm.internalValue).toEqual([])
 
       vm.setCurrentHighlightedOption(vm.forest.nodeMap.b)
       expect(vm.menu.current).toBe('b')
-      pressEnterKey(wrapper)
+      await pressEnterKey(wrapper)
       expect(vm.internalValue).toEqual([ 'b' ])
     })
 
@@ -156,19 +156,19 @@ describe('Keyboard Support', () => {
       vm.setCurrentHighlightedOption(vm.forest.nodeMap.c)
       expect(vm.menu.current).toBe('c')
       expect(vm.forest.nodeMap.c.isDisabled).toBe(true)
-      pressEnterKey(wrapper)
+      await pressEnterKey(wrapper)
       expect(vm.internalValue).toEqual([])
     })
 
     it('pressing enter key on a branch node when disabledBranchNodes=true should be no-op', async () => {
       const { wrapper, vm } = await createInstance()
 
-      wrapper.setProps({ disableBranchNodes: true })
+      await wrapper.setProps({ disableBranchNodes: true })
 
       vm.setCurrentHighlightedOption(vm.forest.nodeMap.d)
       expect(vm.menu.current).toBe('d')
       expect(vm.forest.nodeMap.d.isBranch).toBe(true)
-      pressEnterKey(wrapper)
+      await pressEnterKey(wrapper)
       expect(vm.internalValue).toEqual([])
     })
 
@@ -184,7 +184,7 @@ describe('Keyboard Support', () => {
 
       await vm.$nextTick()
 
-      pressEnterKey(wrapper)
+      await pressEnterKey(wrapper)
     })
   })
 
@@ -211,17 +211,19 @@ describe('Keyboard Support', () => {
 
     it('should reset search query if input has value', async () => {
       await typeSearchText(wrapper, 'test')
-      pressEscapeKey(wrapper)
+      await pressEscapeKey(wrapper)
       expect(vm.trigger.searchQuery).toBe('')
       expect(vm.forest.selectedNodeIds).toEqual([ 'a', 'b' ])
     })
 
-    it('should close the menu if input is empty', () => {
+    it('should close the menu if input is empty', async () => {
       wrapper.vm.openMenu()
+      await wrapper.vm.$nextTick()
+
       expect(vm.trigger.searchQuery).toBe('')
       expect(vm.forest.selectedNodeIds).toEqual([ 'a', 'b' ])
 
-      pressEscapeKey(wrapper)
+      await pressEscapeKey(wrapper)
       expect(vm.trigger.searchQuery).toBe('')
       expect(vm.forest.selectedNodeIds).toEqual([ 'a', 'b' ])
       expect(vm.menu.isOpen).toBe(false)
@@ -274,9 +276,9 @@ describe('Keyboard Support', () => {
 
     it('when searching', async () => {
       await typeSearchText(wrapper, 'ba')
-      pressHomeKey(wrapper)
+      await pressHomeKey(wrapper)
       expect(vm.menu.current).toBe('b')
-      pressEndKey(wrapper)
+      await pressEndKey(wrapper)
       expect(vm.menu.current).toBe('ba')
     })
   })
@@ -312,7 +314,7 @@ describe('Keyboard Support', () => {
     it('keyboard navigation', async () => {
       const wrapper = mount(Treeselect, {
         propsData: {
-          defaultExpandLevel: Infinity,
+          defaultExpandLevel: Number.POSITIVE_INFINITY,
           options: [ {
             id: 'a',
             label: 'a',
@@ -414,36 +416,36 @@ describe('Keyboard Support', () => {
 
       expect(vm.menu.current).toBe('a')
 
-      pressArrowDown(wrapper)
+      await pressArrowDown(wrapper)
       expect(vm.menu.current).toBe('b')
 
-      pressArrowDown(wrapper)
+      await pressArrowDown(wrapper)
       expect(vm.menu.current).toBe('a')
 
-      pressArrowRight(wrapper)
+      await pressArrowRight(wrapper)
       await vm.$nextTick()
       expect(vm.forest.nodeMap.a.childrenStates.isLoading).toBe(true)
 
-      pressArrowDown(wrapper)
+      await pressArrowDown(wrapper)
       expect(vm.menu.current).toBe('b')
 
-      pressArrowUp(wrapper)
+      await pressArrowUp(wrapper)
       expect(vm.menu.current).toBe('a')
 
       await sleep(DELAY)
       expect(vm.forest.nodeMap.a.childrenStates.isLoaded).toBe(true)
       expect(vm.forest.nodeMap.a.children).toBeArrayOfSize(1)
 
-      pressArrowDown(wrapper)
+      await pressArrowDown(wrapper)
       expect(vm.menu.current).toBe('aa')
 
-      pressArrowDown(wrapper)
+      await pressArrowDown(wrapper)
       expect(vm.menu.current).toBe('b')
 
-      pressArrowUp(wrapper)
+      await pressArrowUp(wrapper)
       expect(vm.menu.current).toBe('aa')
 
-      pressArrowUp(wrapper)
+      await pressArrowUp(wrapper)
       expect(vm.menu.current).toBe('a')
     })
   })
@@ -537,9 +539,9 @@ describe('Keyboard Support', () => {
       await typeSearchText(wrapper, 'ab')
       expect(vm.menu.current).toBe('a')
       expect(vm.forest.nodeMap.a.isExpandedOnSearch).toBe(true)
-      pressArrowLeft(wrapper)
+      await pressArrowLeft(wrapper)
       expect(vm.forest.nodeMap.a.isExpandedOnSearch).toBe(false)
-      pressArrowRight(wrapper)
+      await pressArrowRight(wrapper)
       expect(vm.forest.nodeMap.a.isExpandedOnSearch).toBe(true)
     })
   })
@@ -551,6 +553,7 @@ describe('Keyboard Support', () => {
       data: () => ({
         options: null,
       }),
+
       methods: {
         loadOptions({ callback }) {
           setTimeout(() => {
@@ -559,6 +562,7 @@ describe('Keyboard Support', () => {
           }, DELAY)
         },
       },
+
       template: `
         <div>
           <treeselect
@@ -576,17 +580,17 @@ describe('Keyboard Support', () => {
     vm.openMenu()
 
     // operate before delayed loading completes
-    pressHomeKey(wrapper)
-    pressEndKey(wrapper)
-    pressArrowUp(wrapper)
-    pressArrowDown(wrapper)
+    await pressHomeKey(wrapper)
+    await pressEndKey(wrapper)
+    await pressArrowUp(wrapper)
+    await pressArrowDown(wrapper)
 
     // operate after delayed loading completes
     await sleep(DELAY)
-    pressHomeKey(wrapper)
-    pressEndKey(wrapper)
-    pressArrowUp(wrapper)
-    pressArrowDown(wrapper)
+    await pressHomeKey(wrapper)
+    await pressEndKey(wrapper)
+    await pressArrowUp(wrapper)
+    await pressArrowDown(wrapper)
   })
 
   describe('delete key', () => {
@@ -622,19 +626,19 @@ describe('Keyboard Support', () => {
     it('should do nothing if search input has value', async () => {
       await typeSearchText(wrapper, 'test')
       expect(wrapper.vm.trigger.searchQuery).toBe('test')
-      pressDeleteKey(wrapper)
+      await pressDeleteKey(wrapper)
       expect(wrapper.vm.forest.selectedNodeIds).toEqual([ 'a', 'b' ])
     })
 
-    it('should do nothing when backspaceRemoves=false', () => {
-      wrapper.setProps({ deleteRemoves: false })
-      pressDeleteKey(wrapper)
+    it('should do nothing when backspaceRemoves=false', async () => {
+      await wrapper.setProps({ deleteRemoves: false })
+      await pressDeleteKey(wrapper)
       expect(wrapper.vm.forest.selectedNodeIds).toEqual([ 'a', 'b' ])
     })
   })
 
-  it('should ignore any key press combined with modifier key', () => {
-    [ 'ctrlKey', 'shiftKey', 'metaKey', 'altKey' ].forEach(modifierKey => {
+  it('should ignore any key press combined with modifier key', async () => {
+    for (const modifierKey of [ 'ctrlKey', 'shiftKey', 'metaKey', 'altKey' ]) {
       const wrapper = mount(Treeselect, {
         propsData: {
           options: [ {
@@ -647,9 +651,9 @@ describe('Keyboard Support', () => {
         },
       })
 
-      pressEscapeKey(wrapper, modifierKey)
+      await pressEscapeKey(wrapper, modifierKey)
       expect(wrapper.vm.forest.selectedNodeIds).toEqual([ 'a' ])
-    })
+    }
   })
 
   it('any other key press should activate menu', () => {

@@ -1,7 +1,7 @@
-const merge = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+const CssPlugin = require('css-minimizer-webpack-plugin')
 const WebpackCdnPlugin = require('webpack-cdn-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -27,6 +27,7 @@ const webpackConfig = merge(require('./base'), {
     publicPath: config.docs.assetsPublicPath,
     filename: assetsPath('js/[name].[chunkhash].js'),
     chunkFilename: assetsPath('js/[id].[chunkhash].js'),
+    hashFunction: 'sha512',
   },
 
   module: {
@@ -60,8 +61,6 @@ const webpackConfig = merge(require('./base'), {
         // more options:
         // https://github.com/kangax/html-minifier#options-quick-reference
       },
-      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-      chunksSortMode: 'dependency',
       templateParameters: {
         NODE_ENV: 'production',
       },
@@ -75,28 +74,29 @@ const webpackConfig = merge(require('./base'), {
       } ],
       publicPath: '/node_modules',
     }),
-    new CopyWebpackPlugin([ {
-      from: utils.resolve('static'),
-      to: utils.resolve('gh-pages/static'),
-    }, {
-      from: utils.resolve('docs/CNAME'),
-      to: utils.resolve('gh-pages'),
-    }, {
-      from: utils.resolve('docs/browserconfig.xml'),
-      to: utils.resolve('gh-pages'),
-    }, {
-      from: utils.resolve('.circleci'),
-      to: utils.resolve('gh-pages/.circleci'),
-    } ]),
+    new CopyWebpackPlugin({
+      patterns: [ {
+        from: utils.resolve('static'),
+        to: utils.resolve('gh-pages/static'),
+      }, {
+        from: utils.resolve('docs/CNAME'),
+        to: utils.resolve('gh-pages'),
+      }, {
+        from: utils.resolve('docs/browserconfig.xml'),
+        to: utils.resolve('gh-pages'),
+      }, {
+        from: utils.resolve('.circleci'),
+        to: utils.resolve('gh-pages/.circleci'),
+      } ],
+    }),
   ],
 
   optimization: {
     minimizer: [
       new TerserPlugin({
-        sourceMap: ENABLE_SOURCE_MAP,
         extractComments: false,
       }),
-      new OptimizeCSSPlugin(),
+      new CssPlugin(),
     ],
   },
 })

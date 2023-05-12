@@ -216,7 +216,7 @@ describe('Utils', () => {
       const { isNaN } = utils
 
       it('check if value is NaN', () => {
-        expect(isNaN(NaN)).toBe(true)
+        expect(isNaN(Number.NaN)).toBe(true)
         expect(isNaN(0)).toBe(false)
         expect(isNaN(-1)).toBe(false)
         expect(isNaN(1)).toBe(false)
@@ -260,7 +260,7 @@ describe('Utils', () => {
       })
 
       it('should work with undefined/null', () => {
-        expect(deepExtend({}, undefined)).toEqual({})
+        expect(deepExtend({})).toEqual({})
         expect(deepExtend({}, null)).toEqual({})
       })
     })

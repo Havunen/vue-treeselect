@@ -11,8 +11,8 @@
 
   export default {
     name: 'vue-treeselect--hidden-fields',
-    inject: [ 'instance' ],
     functional: true,
+    inject: [ 'instance' ],
 
     render(_, context) {
       const { instance } = context.injections

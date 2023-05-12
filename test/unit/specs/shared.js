@@ -25,7 +25,7 @@ export function generateOptions(maxLevel) {
 }
 
 function createKeyObject(keyCode) {
-  return { which: keyCode, keyCode }
+  return { button: keyCode, keyCode }
 }
 
 export function leftClick(wrapper) {
@@ -33,78 +33,78 @@ export function leftClick(wrapper) {
   wrapper.trigger('mousedown', MOUSE_BUTTON_LEFT)
 }
 
-export function pressBackspaceKey(wrapper) {
+export async function pressBackspaceKey(wrapper) {
   const input = findInput(wrapper)
   const KEY_BACKSPACE = createKeyObject(8)
-  input.trigger('keydown', KEY_BACKSPACE)
+  await input.trigger('keydown', KEY_BACKSPACE)
 }
 
-export function pressEnterKey(wrapper) {
+export async function pressEnterKey(wrapper) {
   const input = findInput(wrapper)
   const KEY_ENTER = createKeyObject(13)
-  input.trigger('keydown', KEY_ENTER)
+  await input.trigger('keydown', KEY_ENTER)
 }
 
-export function pressEscapeKey(wrapper, modifierKey) {
+export async function pressEscapeKey(wrapper, modifierKey) {
   const input = findInput(wrapper)
   const KEY_ESCAPE = createKeyObject(27)
   let eventData = KEY_ESCAPE
   if (modifierKey) eventData = { ...KEY_ESCAPE, [modifierKey]: true }
-  input.trigger('keydown', eventData)
+  await input.trigger('keydown', eventData)
 }
 
-export function pressEndKey(wrapper) {
+export async function pressEndKey(wrapper) {
   const input = findInput(wrapper)
   const KEY_END = createKeyObject(35)
-  input.trigger('keydown', KEY_END)
+  await input.trigger('keydown', KEY_END)
 }
 
-export function pressHomeKey(wrapper) {
+export async function pressHomeKey(wrapper) {
   const input = findInput(wrapper)
   const KEY_HOME = createKeyObject(36)
-  input.trigger('keydown', KEY_HOME)
+  await input.trigger('keydown', KEY_HOME)
 }
 
-export function pressArrowLeft(wrapper) {
+export async function pressArrowLeft(wrapper) {
   const input = findInput(wrapper)
   const ARROW_LEFT = createKeyObject(37)
-  input.trigger('keydown', ARROW_LEFT)
+  await input.trigger('keydown', ARROW_LEFT)
 }
 
-export function pressArrowUp(wrapper) {
+export async function pressArrowUp(wrapper) {
   const input = findInput(wrapper)
   const ARROW_UP = createKeyObject(38)
-  input.trigger('keydown', ARROW_UP)
+  await input.trigger('keydown', ARROW_UP)
 }
 
-export function pressArrowRight(wrapper) {
+export async function pressArrowRight(wrapper) {
   const input = findInput(wrapper)
   const ARROW_RIGHT = createKeyObject(39)
-  input.trigger('keydown', ARROW_RIGHT)
+  await input.trigger('keydown', ARROW_RIGHT)
 }
 
-export function pressArrowDown(wrapper) {
+export async function pressArrowDown(wrapper) {
   const input = findInput(wrapper)
   const ARROW_DOWN = createKeyObject(40)
-  input.trigger('keydown', ARROW_DOWN)
+  await input.trigger('keydown', ARROW_DOWN)
 }
 
-export function pressDeleteKey(wrapper) {
+export async function pressDeleteKey(wrapper) {
   const input = findInput(wrapper)
   const KEY_DELETE = createKeyObject(46)
-  input.trigger('keydown', KEY_DELETE)
+  await input.trigger('keydown', KEY_DELETE)
 }
 
-export function pressAKey(wrapper) {
+export async function pressAKey(wrapper) {
   const input = findInput(wrapper)
   const KEY_A = createKeyObject(65)
-  input.trigger('keydown', KEY_A)
+  await input.trigger('keydown', KEY_A)
 }
 
 export async function typeSearchText(wrapper, text) {
   const $input = findInput(wrapper)
   $input.element.value = text
-  $input.trigger('input')
+  await $input.trigger('input')
   expect(wrapper.vm.$refs.control.$refs['value-container'].$refs.input.value).toBe(text)
   await sleep(INPUT_DEBOUNCE_DELAY + 1)
   expect(wrapper.vm.trigger.searchQuery).toBe(text)
@@ -155,7 +155,7 @@ export function findLabelByNodeId(wrapper, nodeId) {
 }
 
 export function findChildrenOptionListByNodeId(wrapper, nodeId) {
-  return wrapper.findAll(Option).wrappers
+  return wrapper.findAllComponents(Option).wrappers
     .find(optionWrapper => optionWrapper.vm.node.id === nodeId)
     .find('.vue-treeselect__list')
 }

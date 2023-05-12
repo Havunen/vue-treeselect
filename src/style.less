@@ -246,7 +246,7 @@
 
 @keyframes vue-treeselect-animation-fade-in {
   0% {
-    opacity: 0;
+    opacity: 0%;
   }
 }
 
@@ -290,7 +290,7 @@
   &-enter,
   &-leave-to {
     transform: scale(0.7);
-    opacity: 0;
+    opacity: 0%;
   }
 
   &-move {
@@ -609,7 +609,7 @@
   max-width: 100%;
   margin: 0;
   padding: 0;
-  border: 0;
+  border: none;
   outline: none;
   box-sizing: content-box;
   box-shadow: none;
@@ -682,7 +682,7 @@
   }
 
   .vue-treeselect--disabled & {
-    opacity: 0.35;
+    opacity: 35%;
   }
 }
 
@@ -882,7 +882,7 @@
   left: 1px;
   top: 1px;
   background-repeat: no-repeat;
-  opacity: 0;
+  opacity: 0%;
   transition: @treeselect-transition-duration all ease;
 }
 
@@ -896,7 +896,7 @@
   background-size: image-size(@treeselect-checkbox-indeterminate-icon);
 
   .vue-treeselect__checkbox--indeterminate > & {
-    opacity: 1;
+    opacity: 100%;
   }
 
   .vue-treeselect__checkbox--disabled & {
@@ -913,7 +913,7 @@
   transform: scaleY(1 / unit(image-height(@treeselect-checkbox-checked-icon)));
 
   .vue-treeselect__checkbox--checked > & {
-    opacity: 1;
+    opacity: 100%;
     transform: scaleY(1);
   }
 
@@ -981,7 +981,7 @@
 .vue-treeselect__count {
   margin-left: @treeselect-padding;
   font-weight: 400;
-  opacity: 0.6;
+  opacity: 60%;
 
   [dir="rtl"] & {
     margin-left: 0;
@@ -1109,7 +1109,7 @@
     display: block;
     width: 100%;
     height: 100%;
-    opacity: 0.6;
+    opacity: 60%;
     animation: @treeselect-loader-animation-duration vue-treeselect-animation-bounce ease-in-out infinite;
   }
 
@@ -1141,7 +1141,7 @@
   width: 0;
   padding: 0;
   margin: 0;
-  border: 0;
+  border: none;
   overflow: visible;
   box-sizing: border-box;
 }

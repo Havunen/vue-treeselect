@@ -1,9 +1,6 @@
-import Treeselect from './components/Treeselect'
-import treeselectMixin from './mixins/treeselectMixin'
 import './style.less'
 
-export default Treeselect
-export { Treeselect, treeselectMixin }
+
 export {
   // Delayed loading.
   LOAD_ROOT_OPTIONS,
@@ -12,3 +9,5 @@ export {
 } from './constants'
 
 export const VERSION = PKG_VERSION
+export { default, default as Treeselect } from './components/Treeselect'
+export { default as treeselectMixin } from './mixins/treeselectMixin'

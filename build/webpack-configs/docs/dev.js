@@ -1,7 +1,6 @@
 const webpack = require('webpack')
-const merge = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const config = require('../../config')
 const utils = require('../utils')
 
@@ -18,11 +17,11 @@ module.exports = merge(require('./base'), {
   output: {
     publicPath: config.dev.assetsPublicPath,
     filename: '[name].js',
+    hashFunction: 'sha512',
   },
 
   module: {
     rules: [
-      utils.eslintLoader('src'),
       utils.styleLoaders({
         sourceMap: false,
       }),
@@ -30,7 +29,7 @@ module.exports = merge(require('./base'), {
   },
 
   // cheap-module-eval-source-map is faster for development
-  devtool: 'cheap-module-eval-source-map',
+  devtool: false,
 
   plugins: [
     // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
@@ -42,6 +41,5 @@ module.exports = merge(require('./base'), {
         NODE_ENV: 'development',
       },
     }),
-    new FriendlyErrorsPlugin(),
   ],
 })

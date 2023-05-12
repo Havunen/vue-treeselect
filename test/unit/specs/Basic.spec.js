@@ -201,7 +201,7 @@ describe('Basic', () => {
         whenFlatMode(vm)
       })
 
-      it('should reinitialize options after value of `flat` prop changes', () => {
+      it('should reinitialize options after value of `flat` prop changes', async () => {
         const wrapper = mount(Treeselect, {
           propsData: {
             options,
@@ -209,13 +209,13 @@ describe('Basic', () => {
         })
         const { vm } = wrapper
 
-        wrapper.setProps({ flat: false })
+        await wrapper.setProps({ flat: false })
         whenNonFlatMode(vm)
 
-        wrapper.setProps({ flat: true })
+        await wrapper.setProps({ flat: true })
         whenFlatMode(vm)
 
-        wrapper.setProps({ flat: false })
+        await wrapper.setProps({ flat: false })
         whenNonFlatMode(vm)
       })
     })
@@ -529,7 +529,7 @@ describe('Basic', () => {
   })
 
   describe('fallback node', () => {
-    it('shape', () => {
+    it('shape', async () => {
       const wrapper = mount(Treeselect, {
         propsData: {
           options: [],
@@ -538,7 +538,7 @@ describe('Basic', () => {
       const { vm } = wrapper
 
       expect(vm.forest.nodeMap).toBeEmptyObject()
-      wrapper.setProps({ value: 'test' })
+      await wrapper.setProps({ value: 'test' })
       expect(vm.forest.nodeMap.test).toEqual({
         id: jasmine.any(String),
         label: jasmine.any(String),
@@ -710,6 +710,7 @@ describe('Basic', () => {
           }, DELAY)
         },
       },
+
       template: `
         <div>
           <treeselect
@@ -729,7 +730,7 @@ describe('Basic', () => {
     expect(vm.forest.nodeMap.a).not.toHaveMember('isFallbackNode')
   })
 
-  it('should rebuild state after swithching from single to multiple', () => {
+  it('should rebuild state after swithching from single to multiple', async () => {
     const wrapper = mount(Treeselect, {
       propsData: {
         options: [ {
@@ -747,11 +748,11 @@ describe('Basic', () => {
     const { vm } = wrapper
 
     expect(vm.forest.checkedStateMap).toBeEmptyObject()
-    wrapper.setProps({ multiple: true })
+    await wrapper.setProps({ multiple: true })
     expect(vm.forest.checkedStateMap).toBeNonEmptyObject()
   })
 
-  it('should rebuild state after value changed externally when multiple=true', () => {
+  it('should rebuild state after value changed externally when multiple=true', async () => {
     const wrapper = mount(Treeselect, {
       propsData: {
         options: [ {
@@ -772,7 +773,7 @@ describe('Basic', () => {
       a: 0,
       aa: 0,
     })
-    wrapper.setProps({ value: [ 'a' ] })
+    await wrapper.setProps({ value: [ 'a' ] })
     expect(vm.forest.checkedStateMap).toEqual({
       a: 2,
       aa: 2,
@@ -794,6 +795,7 @@ describe('Basic', () => {
           label: 'b',
         } ],
       },
+
       template: `
         <div>
           <treeselect
@@ -814,7 +816,7 @@ describe('Basic', () => {
     expect(vm.value).toEqual([])
   })
 
-  it('an option should be rendered with its id in the markup', () => {
+  it('an option should be rendered with its id in the markup', async () => {
     const wrapper = mount(Treeselect, {
       propsData: {
         options: [ {
@@ -825,13 +827,14 @@ describe('Basic', () => {
             label: 'aa',
           } ],
         } ],
-        defaultExpandLevel: Infinity,
+        defaultExpandLevel: Number.POSITIVE_INFINITY,
       },
     })
 
     wrapper.vm.openMenu()
+    await wrapper.vm.$nextTick()
 
-    const optionsWrappers = wrapper.findAll(Option).wrappers
+    const optionsWrappers = wrapper.findAllComponents(Option).wrappers
     const a = optionsWrappers.find(optionWrapper => optionWrapper.vm.node.id === 'a')
       .find('.vue-treeselect__option')
     const aa = optionsWrappers.find(optionWrapper => optionWrapper.vm.node.id === 'aa')

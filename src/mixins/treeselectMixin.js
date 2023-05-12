@@ -339,7 +339,7 @@ export default {
      */
     limit: {
       type: Number,
-      default: Infinity,
+      default: Number.POSITIVE_INFINITY,
     },
 
     /**

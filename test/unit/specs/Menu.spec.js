@@ -1,11 +1,11 @@
 import { mount } from '@vue/test-utils'
+import Treeselect from '@src/components/Treeselect'
+import Input from '@src/components/Input'
 import {
   generateOptions,
   leftClick, typeSearchText,
   findMenu, findOptionByNodeId,
 } from './shared'
-import Treeselect from '@src/components/Treeselect'
-import Input from '@src/components/Input'
 
 describe('Menu', () => {
   it('should blur the input & close the menu after clicking anywhere outside the component', async () => {
@@ -28,7 +28,7 @@ describe('Menu', () => {
     expect(vm.menu.isOpen).toBe(false)
   })
 
-  it('should open the menu after clicking the control when focused', () => {
+  it('should open the menu after clicking the control when focused', async () => {
     const wrapper = mount(Treeselect, {
       attachToDocument: true,
       propsData: {
@@ -38,7 +38,7 @@ describe('Menu', () => {
     wrapper.vm.trigger.isFocused = true
     const valueContainer = wrapper.find('.vue-treeselect__value-container')
 
-    leftClick(valueContainer)
+    await leftClick(valueContainer)
     expect(wrapper.vm.menu.isOpen).toBe(true)
   })
 
@@ -62,9 +62,9 @@ describe('Menu', () => {
 
     expect(a.isExpanded).toBe(false)
     const optionArrow = findOptionByNodeId(wrapper, 'a').find('.vue-treeselect__option-arrow-container')
-    leftClick(optionArrow)
+    await leftClick(optionArrow)
     expect(a.isExpanded).toBe(true)
-    leftClick(optionArrow)
+    await leftClick(optionArrow)
     expect(a.isExpanded).toBe(false)
   })
 
@@ -102,7 +102,7 @@ describe('Menu', () => {
     const wrapper = mount(Treeselect, {
       propsData: {
         options: generateOptions(3),
-        defaultExpandLevel: Infinity,
+        defaultExpandLevel: Number.POSITIVE_INFINITY,
         maxHeight,
       },
       attachToDocument: true,
@@ -152,7 +152,7 @@ describe('Menu', () => {
     assertInputValue('')
   })
 
-  it('set appendToBody to true when alwaysOpen=true should not throw error', () => {
+  it('set appendToBody to true when alwaysOpen=true should not throw error', async () => {
     const wrapper = mount(Treeselect, {
       attachToDocument: true,
       propsData: {
@@ -161,6 +161,6 @@ describe('Menu', () => {
       },
     })
 
-    wrapper.setProps({ appendToBody: true })
+    await wrapper.setProps({ appendToBody: true })
   })
 })

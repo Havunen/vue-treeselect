@@ -1,7 +1,7 @@
-const merge = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+const CssPlugin = require('css-minimizer-webpack-plugin')
 const { libraryTargetPlaceholder } = require('../../config').library
 const utils = require('../utils')
 
@@ -35,10 +35,9 @@ module.exports = webpackConfig => merge(webpackConfig, {
   optimization: {
     minimizer: [
       new TerserPlugin({
-        sourceMap: ENABLE_SOURCE_MAP,
         extractComments: false,
       }),
-      new OptimizeCSSPlugin(),
+      new CssPlugin(),
     ],
   },
 })

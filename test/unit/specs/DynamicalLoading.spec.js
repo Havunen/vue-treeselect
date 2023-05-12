@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import { mount } from '@vue/test-utils'
 import sleep from 'yaku/lib/sleep'
+import Treeselect from '@src/components/Treeselect'
+import { CHECKED } from '@src/constants'
 import {
   leftClick,
   typeSearchText,
@@ -9,8 +11,6 @@ import {
   findOptionArrowContainerByNodeId,
   findChildrenOptionListByNodeId,
 } from './shared'
-import Treeselect from '@src/components/Treeselect'
-import { CHECKED } from '@src/constants'
 
 describe('Dynamical Loading', () => {
   describe('Verify props', () => {
@@ -97,6 +97,7 @@ describe('Dynamical Loading', () => {
       let childrenOptionList
 
       vm.openMenu()
+      await vm.$nextTick()
 
       // children awaits to be loaded
       expect(vm.forest.nodeMap.a.children).toBeEmptyArray()
@@ -160,10 +161,11 @@ describe('Dynamical Loading', () => {
       let childrenOptionList
 
       vm.openMenu()
+      await vm.$nextTick()
 
       // 1st try
       optionArrowContainer = findOptionArrowContainerByNodeId(wrapper, 'a')
-      leftClick(optionArrowContainer) // expand
+      await leftClick(optionArrowContainer) // expand
       expect(spyForLoadOptions.calls.count()).toBe(1)
       await sleep(DELAY)
       childrenOptionList = findChildrenOptionListByNodeId(wrapper, 'a')
@@ -175,7 +177,7 @@ describe('Dynamical Loading', () => {
 
       // 2nd try - click on retry
       const retry = wrapper.find('.vue-treeselect__retry')
-      leftClick(retry)
+      await leftClick(retry)
       expect(spyForLoadOptions.calls.count()).toBe(2)
       // should reset state
       expect(vm.forest.nodeMap.a.childrenStates.isLoading).toBe(true)
@@ -187,8 +189,8 @@ describe('Dynamical Loading', () => {
 
       // 3nd try - collapse & re-expand
       optionArrowContainer = findOptionArrowContainerByNodeId(wrapper, 'a')
-      leftClick(optionArrowContainer) // collapse
-      leftClick(optionArrowContainer) // re-expand
+      await leftClick(optionArrowContainer) // collapse
+      await leftClick(optionArrowContainer) // re-expand
       expect(spyForLoadOptions.calls.count()).toBe(3)
       await sleep(DELAY)
       childrenOptionList = findChildrenOptionListByNodeId(wrapper, 'a')
@@ -668,6 +670,7 @@ describe('Dynamical Loading', () => {
           options: null,
           loadOptions: spyForLoadOptions,
         },
+
         template: `
           <div>
             <treeselect
@@ -736,6 +739,7 @@ describe('Dynamical Loading', () => {
           options: null,
           loadOptions: spyForLoadOptions,
         },
+
         template: `
           <div>
             <treeselect
@@ -793,6 +797,7 @@ describe('Dynamical Loading', () => {
           options: null,
           loadOptions: spyForLoadOptions,
         },
+
         template: `
           <div>
             <treeselect
@@ -834,6 +839,7 @@ describe('Dynamical Loading', () => {
             }, DELAY)
           },
         },
+
         template: `
           <div>
             <treeselect
@@ -862,7 +868,7 @@ describe('Dynamical Loading', () => {
       }))
     })
 
-    it('multiple instances share the same `loadOptions` function', () => {
+    it('multiple instances share the same `loadOptions` function', async () => {
       const loadOptions = jasmine.createSpy('loadOptions')
       const { vm: vm1 } = mount(Treeselect, {
         propsData: {
@@ -882,6 +888,8 @@ describe('Dynamical Loading', () => {
       })
 
       vm1.openMenu()
+      await vm1.$nextTick()
+
       expect(loadOptions.calls.argsFor(0)).toEqual([ {
         id: 1,
         instanceId: 1,
@@ -890,6 +898,8 @@ describe('Dynamical Loading', () => {
       } ])
 
       vm2.openMenu()
+      await vm2.$nextTick()
+
       expect(loadOptions.calls.argsFor(1)).toEqual([ {
         id: 2,
         instanceId: 2,
@@ -934,6 +944,7 @@ describe('Dynamical Loading', () => {
             }
           },
         },
+
         template: `
           <div>
             <treeselect
@@ -974,6 +985,7 @@ describe('Dynamical Loading', () => {
             }
           },
         },
+
         template: `
           <div>
             <treeselect

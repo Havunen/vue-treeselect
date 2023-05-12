@@ -36,6 +36,7 @@
           label: 'Item',
         } ],
       } ],
+
       value: [ 'disabled-checked' ],
     }),
   }

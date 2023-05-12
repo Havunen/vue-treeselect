@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
-import { leftClick, findLabelContainerByNodeId } from './shared'
 import Treeselect from '@src/components/Treeselect'
 import { UNCHECKED, INDETERMINATE, CHECKED } from '@src/constants'
+import { leftClick, findLabelContainerByNodeId } from './shared'
 
 describe('Single-select', () => {
   it('basic', () => {
@@ -62,7 +62,7 @@ describe('Single-select', () => {
 
     const labelContainer = findLabelContainerByNodeId(wrapper, 'a')
 
-    leftClick(labelContainer)
+    await leftClick(labelContainer)
     expect(vm.forest.selectedNodeIds).toEqual([ 'a' ])
     expect(vm.trigger.isFocused).toEqual(false)
     expect(vm.menu.isOpen).toEqual(false)
@@ -670,8 +670,8 @@ describe('Multi-select', () => {
     })
   })
 
-  it('case #6', () => {
-    wrapper.setProps({
+  it('case #6', async () => {
+    await wrapper.setProps({
       options: [ {
         id: 'a',
         label: 'a',

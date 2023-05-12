@@ -3,7 +3,7 @@ process.env.CHROME_BIN = require('puppeteer').executablePath()
 module.exports = config => {
   config.set({
     files: [ './index.js' ],
-    browsers: [ 'ChromeHeadlessWithoutSandbox' ],
+    browsers: [ 'ChromeHeadless' ],
     customLaunchers: {
       ChromeHeadlessWithoutSandbox: {
         // `ChromeHeadless` without any flags used to be working

@@ -9,7 +9,7 @@
 </template>
 
 <script>
-  import { LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
+  import { LOAD_ROOT_OPTIONS } from '@havunen/vue-treeselect'
 
   const sleep = d => new Promise(r => setTimeout(r, d))
   let called = false
