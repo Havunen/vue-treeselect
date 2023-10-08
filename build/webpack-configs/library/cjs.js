@@ -5,8 +5,9 @@ const { libraryTargetPlaceholder } = require('../../config').library
 module.exports = webpackConfig => merge(webpackConfig, {
   output: {
     filename: webpackConfig.output.filename.replace(libraryTargetPlaceholder, 'cjs'),
-    libraryTarget: 'commonjs2',
-    library: 'VueTreeselect',
+    library: {
+      type: 'commonjs-module',
+    },
   },
 
   externals: [
